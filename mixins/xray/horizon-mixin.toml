@@ -1,0 +1,99 @@
+[mod]
+id = "xray"
+version = "0.1.0"
+priority = 100
+
+[[module]]
+id = "runtime"
+file = "crates/horizon-client/src/game.rs"
+name = "port_xray"
+source = "runtime.rs"
+
+[[module]]
+id = "game_side"
+file = "crates/horizon-client/src/game.rs"
+name = "port_xray_game"
+source = "game_side.rs"
+
+[[injection]]
+id = "list"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_mods"
+helper = "list.rs"
+bindings = [
+  { name = "mods", ty = "&mut Vec<crate::game::native_hooks::NativeMod>", value = "&mut *mods" },
+]
+
+[[injection]]
+id = "key"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_key"
+helper = "key.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "key", ty = "&str", value = "key" },
+  { name = "pressed", ty = "bool", value = "pressed" },
+]
+
+[[injection]]
+id = "tick"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_tick"
+helper = "tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+[[injection]]
+id = "hud"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_hud"
+helper = "hud.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "batch", ty = "&mut horizon_client::hud::HudBatch", value = "&mut *batch" },
+  { name = "corners", ty = "&mut horizon_client::extras_hud::Corners", value = "&mut *corners" },
+]
+
+[[injection]]
+id = "settings"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_settings"
+helper = "settings.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "buttons", ty = "&mut Vec<String>", value = "&mut *buttons" },
+]
+
+[[injection]]
+id = "click"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_settings_click"
+helper = "click.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "mod_id", ty = "&str", value = "mod_id" },
+  { name = "button", ty = "usize", value = "button" },
+]
+
+# Off: @Inject(INVOKE) on LevelRenderer.executeClassicTransparency (LevelRendererMixin.onAfterWeather)
+#   No Horizon function mapped for LevelRenderer.executeClassicTransparency (run `match`, or map it in a --mappings file).
+# [[injection]]
+# id = "level-renderer-mixin-on-after-weather"
+# kind = "AFTER_CALL"
+# target = "TODO"
+
+# Off: @Inject(RETURN) on Level.setBlock (LevelMixin.onBlockDestroy)
+#   `horizon_world::level::Behaviours::set_block` is generic: horizon-mixins rejects generic targets.
+# [[injection]]
+# id = "level-mixin-on-block-destroy"
+# kind = "RETURN"
+# target = "horizon_world::level::Behaviours::set_block"
+
+# Off: @Accessor on RenderPipelines.MATRICES_FOG_SNIPPET (RenderPipelinesMixin.getMatricesFogSnippet)
+#   No Horizon function mapped for RenderPipelines.MATRICES_FOG_SNIPPET (run `match`, or map it in a --mappings file).
+# [[injection]]
+# id = "render-pipelines-mixin-get-matrices-fog-snippet"
+# kind = "GET"
+# target = "TODO"
